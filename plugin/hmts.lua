@@ -124,7 +124,10 @@ end
 ---@param predicate string[]
 ---@return boolean
 local function hmts_path_handler(match, _, bufnr, predicate)
-	local node = match[predicate[2]]:parent()
+    local captured = match[predicate[2]]                                                                                                                                 
+    if type(captured) == "table" then captured = captured[1] end                                                                                                         
+    if not captured then return false end
+    local node = captured:parent()                                                                                                                                       
 	local target_path = vim.list_slice(predicate, 3, nil)
 
 	while node do
@@ -153,6 +156,8 @@ end
 ---@param metadata table<string, string>
 local function hmts_inject_handler(match, _, bufnr, predicate, metadata)
 	local path_node = match[predicate[2]]
+    if type(path_node) == "table" then path_node = path_node[1] end                                                                                                      
+    if not path_node then return end
 	local filename = find_filename_in_parent_node(path_node, bufnr)
 	local alias = vim.filetype.match({ filename = filename })
 
